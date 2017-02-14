@@ -1,0 +1,234 @@
+template <typename type>
+Vector<type> :: Vector(void): objects(NULL), initial_size(10), count(0) {
+    objects = new type [initial_size];
+    initial_size = 10;
+    count = 0;
+}
+
+template <typename type>
+void Vector<type> :: grow(void) {
+    if (count >= initial_size) {
+        initial_size = initial_size * 2;
+        type* temp = new type[initial_size];
+        for (short i=0; i<count; i++) {
+            temp[i] = objects[i];
+        }
+        delete [] objects;
+        objects = temp;
+    }
+    return;
+}
+
+template <typename type>
+void Vector<type> :: shrink(void) {
+    if (count == initial_size / 4) {
+        initial_size = initial_size / 2;
+        type* temp = new type[initial_size];
+        for (short i=0; i<count; i++) {
+            temp[i] = objects[i];
+        }
+        delete [] objects;
+        objects = temp;
+    }
+    return;
+}
+
+template <typename type>
+Vector<type> & Vector<type> :: operator= (Vector other) {
+    std::swap(objects, other.objects);
+    std::swap(initial_size, other.initial_size);
+    std::swap(count, other.count);
+    return *this;
+}
+
+template <typename type>
+void Vector<type> :: operator() (long number, type something) {
+    long total = count + number;
+    for (long i=count; i<total; i++) {
+        objects[i] = something;
+        count++;
+    }
+    return;
+}
+
+template <typename type>
+type Vector<type> :: operator[](const long & position) const {
+    return objects[position];
+}
+
+template <typename type>
+void Vector<type> :: operator+ (const type & something) {
+    objects[count] = something;
+    count++;
+    grow();
+    return;
+}
+
+template <typename type>
+void Vector<type> :: operator- (const short & number) {
+    if (count >= number) {
+        count = count - number;
+    }
+    else {
+        count = 0;
+    }
+    shrink();
+    return;
+}
+
+template <typename type>
+Vector<type> Vector<type> :: operator-- (int) {
+    Vector<type> sub;
+    if (count != 0) {
+        count--;
+        shrink();
+    }
+    else {
+        count = 0;
+    }
+    sub.count = count;
+    return sub;
+}
+
+template <typename type>
+void Vector<type> :: erase(long position) {
+    for (long i=position-1; i<count-1; ++i) {
+        objects[i] = objects[i+1];
+    }
+    count--;
+    return;
+}
+
+template <typename type>
+void Vector<type> :: swap(Vector & other) {
+    std::swap(objects, other.objects);
+    std::swap(initial_size, other.initial_size);
+    std::swap(count, other.count);
+    return;
+}
+
+template <typename type>
+void Vector<type> :: replace(long position, type something) {
+    objects[position-1] = something;
+    return;
+}
+
+template <typename type>
+void Vector<type> :: insert(long position, type something) {
+    count++;
+    for (long i=count; i>=position; i--) {
+        objects[i] = objects[i-1];
+    }
+    objects[position-1] = something;
+    grow();
+    return;
+}
+
+template <typename type>
+void Vector<type> :: shrink_to_fit(void) {
+    initial_size = count;
+    type* temp = new type[initial_size];
+    for (short i=0; i<count; i++) {
+        temp[i] = objects[i];
+    }
+    delete [] objects;
+    objects = temp;
+    return;
+}
+
+template <typename type>
+long Vector<type> :: size(void) const {
+    return count;
+}
+
+template <typename type>
+long Vector<type> :: max_size(void) const {
+    return initial_size;
+}
+
+template <typename type>
+bool Vector<type> :: empty(void) {
+    if (count == 0) {
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+
+template <typename type>
+void Vector<type> :: clear(void) {
+    count = 0;
+    return;
+}
+
+template <typename type>
+type Vector<type> :: first(void) {
+    return objects[0];
+}
+
+template <typename type>
+type Vector<type> :: last(void) {
+    return objects[count-1];
+}
+
+template <typename type>
+void Vector<type> :: sort(void) {
+    for (short i=1; i<count; i++) {
+        short j = i;
+        while (j > 0 && objects[j-1] > objects[j]) {
+            type temp = objects[j];
+            objects[j] = objects[j-1];
+            objects[j-1] = temp;
+            j--;
+        }
+    }
+    return;
+}
+
+template <typename type>
+type change(type character) {
+    if ( character >= 'A' && character <= 'Z' ) {
+        character = character + 'a' - 'A';
+    }
+    return character;
+}
+
+std::string lower(std::string something) {
+    for (size_t i=0; i<something.length(); i++) {
+        char z = something.at(i);
+        change(z);
+        something.at(i) = z;
+    }
+    return something;
+}
+
+template <typename type>
+long Vector<type> :: search(type something) {
+    for (long i=0; i<count; i++) {
+        if (change( objects[i] ) == change( something )) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+template <typename type>
+long Vector<type> :: find(std::string something) {
+    for (long i=0; i<count; i++) {
+        if (lower( objects[i] ) == lower( something )) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+template <typename type>
+type* Vector<type> :: begin(void) {
+    return & objects[0];
+}
+
+template <typename type>
+type* Vector<type> :: end(void) {
+    return & objects[count-1];
+}
